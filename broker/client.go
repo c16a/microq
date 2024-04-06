@@ -8,22 +8,9 @@ import (
 
 type ConnectedClient struct {
 	id            string
-	subscriptions map[string]*Subscription
+	subscriptions []*Subscription
 	conn          WebSocketConnection
 	mutex         sync.RWMutex
-}
-
-type Subscription struct {
-	active bool
-	group  string
-}
-
-func (s *Subscription) IsActive() bool {
-	return s.active
-}
-
-func (s *Subscription) GetGroup() string {
-	return s.group
 }
 
 func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
@@ -31,7 +18,7 @@ func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
 		id:            id,
 		conn:          conn,
 		mutex:         sync.RWMutex{},
-		subscriptions: make(map[string]*Subscription),
+		subscriptions: make([]*Subscription, 0),
 	}
 }
 
@@ -51,24 +38,34 @@ func (client *ConnectedClient) GetSubscription(topic string) *Subscription {
 	client.mutex.RLock()
 	defer client.mutex.RUnlock()
 
-	return client.subscriptions[topic]
+	for _, sub := range client.subscriptions {
+		if sub.Matches(topic) {
+			return sub
+		}
+	}
+
+	return nil
 }
 
 func (client *ConnectedClient) SubscribeToTopic(topic string, group string) {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	subscription := &Subscription{active: true}
+	subscription := &Subscription{active: true, pattern: topic}
 	if len(group) > 0 {
 		subscription.group = group
 	}
 
-	client.subscriptions[topic] = subscription
+	client.subscriptions = append(client.subscriptions, subscription)
 }
 
 func (client *ConnectedClient) UnsubscribeFromTopic(topic string) {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	delete(client.subscriptions, topic)
+	for i, subscription := range client.subscriptions {
+		if subscription.Matches(topic) {
+			client.subscriptions = append(client.subscriptions[:i], client.subscriptions[i+1:]...)
+		}
+	}
 }
