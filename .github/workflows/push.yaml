@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     container: golang:1.22.2
     steps:
@@ -17,3 +18,25 @@ jobs:
 
       - name: Build
         run: go build -ldflags="-s -w" -o microq main.go
+
+  analyze:
+    name: Analyze Go
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+          build-mode: autobuild
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
