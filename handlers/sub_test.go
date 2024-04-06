@@ -11,9 +11,9 @@ func TestHandleSubscribe(t *testing.T) {
 	client := broker.NewConnectedClient(&TestingWebSocketConnection{}, "client-1")
 
 	event := &events.SubEvent{
-		Kind:  events.Sub,
-		Group: "g1",
-		Topic: "t1",
+		Kind:    events.Sub,
+		Group:   "g1",
+		Pattern: "t1",
 	}
 	message, err := json.Marshal(event)
 	if err != nil {

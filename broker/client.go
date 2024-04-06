@@ -47,11 +47,11 @@ func (client *ConnectedClient) GetSubscription(topic string) *Subscription {
 	return nil
 }
 
-func (client *ConnectedClient) SubscribeToTopic(topic string, group string) {
+func (client *ConnectedClient) SubscribeToPattern(pattern string, group string) {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	subscription := &Subscription{active: true, pattern: topic}
+	subscription := &Subscription{active: true, pattern: pattern}
 	if len(group) > 0 {
 		subscription.group = group
 	}

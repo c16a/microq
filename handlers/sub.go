@@ -12,11 +12,11 @@ func handleSubscribe(message []byte, client *broker.ConnectedClient) error {
 	if err != nil {
 		return err
 	}
-	client.SubscribeToTopic(event.Topic, event.Group)
+	client.SubscribeToPattern(event.Pattern, event.Group)
 	subackEvent := &events.SubAckEvent{
 		Kind:    events.SubAck,
 		Success: true,
-		Topic:   event.Topic,
+		Topic:   event.Pattern,
 	}
 	return client.WriteInterface(subackEvent)
 }
