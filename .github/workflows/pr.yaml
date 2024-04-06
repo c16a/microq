@@ -1,0 +1,19 @@
+name: Go
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Build
+        run: go build -ldflags="-s -w" -o microq main.go
