@@ -5,8 +5,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: Test
     runs-on: ubuntu-latest
     container: golang:1.22.2
     steps:
@@ -15,6 +15,83 @@ jobs:
 
       - name: Test
         run: go test -v ./...
+
+  build-linux-amd64:
+    env:
+      GOOS: linux
+      GOARCH: amd64
+    name: Build (linux/amd64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: go build -ldflags="-s -w" -o microq main.go
+
+  build-linux-arm64:
+    env:
+      GOOS: linux
+      GOARCH: arm64
+    name: Build (linux/arm64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: go build -ldflags="-s -w" -o microq main.go
+
+  build-darwin-arm64:
+    env:
+      GOOS: darwin
+      GOARCH: arm64
+    name: Build (darwin/arm64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: go build -ldflags="-s -w" -o microq main.go
+
+  build-windows-amd64:
+    env:
+      GOOS: windows
+      GOARCH: amd64
+    name: Build (windows/amd64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: go build -ldflags="-s -w" -o microq main.go
+
+  build-windows-arm64:
+    env:
+      GOOS: windows
+      GOARCH: arm64
+    name: Build (windows/arm64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container: golang:1.22.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Build
         run: go build -ldflags="-s -w" -o microq main.go
@@ -26,7 +103,11 @@ jobs:
     permissions:
       security-events: write
     needs:
-      - build
+      - build-linux-amd64
+      - build-linux-arm64
+      - build-darwin-arm64
+      - build-windows-amd64
+      - build-windows-arm64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
