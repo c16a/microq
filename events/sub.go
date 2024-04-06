@@ -1,8 +1,8 @@
 package events
 
-const Subscribe = "subscribe"
+const Sub = "sub"
 
-type SubscribeEvent struct {
+type SubEvent struct {
 	Kind  string `json:"kind"`
 	Group string `json:"group"`
 	Topic string `json:"topic"`

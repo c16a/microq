@@ -7,11 +7,16 @@ import (
 )
 
 func handleUnsubscribe(message []byte, client *broker.ConnectedClient) error {
-	var event events.UnsubscribeEvent
+	var event events.UnsubEvent
 	err := json.Unmarshal(message, &event)
 	if err != nil {
 		return err
 	}
-	client.UnsubscribeFromTopics(event.Topics)
-	return nil
+	client.UnsubscribeFromTopic(event.Topic)
+	unsubackEvent := &events.UnsubAckEvent{
+		Kind:    events.UnSubAck,
+		Success: true,
+		Topic:   event.Topic,
+	}
+	return client.WriteInterface(unsubackEvent)
 }

@@ -37,7 +37,7 @@ func (broker *Broker) Disconnect(clientId string) {
 	delete(broker.clients, clientId)
 }
 
-func (broker *Broker) Broadcast(event events.PublishEvent) error {
+func (broker *Broker) Broadcast(event events.PubEvent) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err

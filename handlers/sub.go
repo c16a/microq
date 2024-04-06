@@ -7,11 +7,16 @@ import (
 )
 
 func handleSubscribe(message []byte, client *broker.ConnectedClient) error {
-	var event events.SubscribeEvent
+	var event events.SubEvent
 	err := json.Unmarshal(message, &event)
 	if err != nil {
 		return err
 	}
 	client.SubscribeToTopic(event.Topic, event.Group)
-	return nil
+	subackEvent := &events.SubAckEvent{
+		Kind:    events.SubAck,
+		Success: true,
+		Topic:   event.Topic,
+	}
+	return client.WriteInterface(subackEvent)
 }

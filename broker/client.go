@@ -1,6 +1,7 @@
 package broker
 
 import (
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"sync"
 )
@@ -38,6 +39,14 @@ func (client *ConnectedClient) WriteDataMessage(data []byte) error {
 	return client.conn.WriteMessage(websocket.TextMessage, data)
 }
 
+func (client *ConnectedClient) WriteInterface(v any) error {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	return client.WriteDataMessage(data)
+}
+
 func (client *ConnectedClient) GetSubscription(topic string) *Subscription {
 	client.mutex.RLock()
 	defer client.mutex.RUnlock()
@@ -62,10 +71,4 @@ func (client *ConnectedClient) UnsubscribeFromTopic(topic string) {
 	defer client.mutex.Unlock()
 
 	delete(client.subscriptions, topic)
-}
-
-func (client *ConnectedClient) UnsubscribeFromTopics(topics []string) {
-	for _, topic := range topics {
-		client.UnsubscribeFromTopic(topic)
-	}
 }

@@ -8,11 +8,11 @@ import (
 func HandleMessage(client *broker.ConnectedClient, broker *broker.Broker, message []byte) error {
 	kind := events.GetKindFromJson(message)
 	switch kind {
-	case events.Publish:
-		return handlePublish(message, broker)
-	case events.Subscribe:
+	case events.Pub:
+		return handlePublish(message, client, broker)
+	case events.Sub:
 		return handleSubscribe(message, client)
-	case events.Unsubscribe:
+	case events.Unsub:
 		return handleUnsubscribe(message, client)
 	}
 	return nil

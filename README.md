@@ -5,7 +5,7 @@ A tiny Websocket-based event broker.
 - [x] Grouped subscriptions
 - [ ] Offline messages
 - [ ] Clustering
-- [ ] QoS
+- [x] QoS (0, 1)
 
 ## Why does this exist?
 Because.

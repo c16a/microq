@@ -1,9 +1,10 @@
 package events
 
-const Publish = "publish"
+const Pub = "pub"
 
-type PublishEvent struct {
+type PubEvent struct {
 	Kind    string `json:"kind"`
 	Message string `json:"message"`
 	Topic   string `json:"topic"`
+	QoS     int    `json:"qos"`
 }

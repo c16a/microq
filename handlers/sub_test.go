@@ -10,8 +10,8 @@ import (
 func TestHandleSubscribe(t *testing.T) {
 	client := broker.NewConnectedClient(&TestingWebSocketConnection{}, "client-1")
 
-	event := &events.SubscribeEvent{
-		Kind:  events.Subscribe,
+	event := &events.SubEvent{
+		Kind:  events.Sub,
 		Group: "g1",
 		Topic: "t1",
 	}
