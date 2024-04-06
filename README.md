@@ -5,7 +5,7 @@ A tiny Websocket-based event broker.
 - [x] Grouped subscriptions
 - [ ] Offline messages
 - [ ] Clustering
-- [x] QoS (0, 1)
+- [x] QoS (0, 1, 2)
 - [x] Topics & Patterns
 
 ### Subscriptions

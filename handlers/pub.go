@@ -20,6 +20,13 @@ func handlePublish(message []byte, client *broker.ConnectedClient, broker *broke
 		}
 		client.WriteInterface(pubAckEvent)
 	}
+	if event.QoS == 2 {
+		pubRecEvent := &events.PubRecEvent{
+			Kind:     events.PubRec,
+			PacketId: uuid.NewString(),
+		}
+		client.WriteInterface(pubRecEvent)
+	}
 	go broker.Broadcast(event)
 	return nil
 }

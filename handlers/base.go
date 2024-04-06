@@ -10,6 +10,8 @@ func HandleMessage(client *broker.ConnectedClient, broker *broker.Broker, messag
 	switch kind {
 	case events.Pub:
 		return handlePublish(message, client, broker)
+	case events.PubRel:
+		return handlePubrel(message, client)
 	case events.Sub:
 		return handleSubscribe(message, client)
 	case events.Unsub:
