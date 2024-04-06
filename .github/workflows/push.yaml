@@ -1,4 +1,4 @@
-name: Go
+name: Push
 
 on:
   push:
@@ -25,7 +25,8 @@ jobs:
     timeout-minutes: 360
     permissions:
       security-events: write
-
+    needs:
+      - build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
