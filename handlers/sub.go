@@ -16,7 +16,7 @@ func handleSubscribe(message []byte, client *broker.ConnectedClient) error {
 	subackEvent := &events.SubAckEvent{
 		Kind:    events.SubAck,
 		Success: true,
-		Topic:   event.Pattern,
+		Pattern: event.Pattern,
 	}
 	return client.WriteInterface(subackEvent)
 }

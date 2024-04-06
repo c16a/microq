@@ -7,18 +7,20 @@ import (
 )
 
 type ConnectedClient struct {
-	id            string
-	subscriptions []*Subscription
-	conn          WebSocketConnection
-	mutex         sync.RWMutex
+	id              string
+	subscriptions   []*Subscription
+	unsubscriptions []*Subscription
+	conn            WebSocketConnection
+	mutex           sync.RWMutex
 }
 
 func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
 	return &ConnectedClient{
-		id:            id,
-		conn:          conn,
-		mutex:         sync.RWMutex{},
-		subscriptions: make([]*Subscription, 0),
+		id:              id,
+		conn:            conn,
+		mutex:           sync.RWMutex{},
+		subscriptions:   make([]*Subscription, 0),
+		unsubscriptions: make([]*Subscription, 0),
 	}
 }
 
@@ -34,10 +36,20 @@ func (client *ConnectedClient) WriteInterface(v any) error {
 	return client.WriteDataMessage(data)
 }
 
-func (client *ConnectedClient) GetSubscription(topic string) *Subscription {
+func (client *ConnectedClient) GetEligibility(topic string) *Subscription {
 	client.mutex.RLock()
 	defer client.mutex.RUnlock()
 
+	// If topic matches any unsubscribed pattern,
+	// it's not eligible
+	for _, unsub := range client.unsubscriptions {
+		if unsub.Matches(topic) {
+			return nil
+		}
+	}
+
+	// If topic is not unsubscribed as a part of any pattern,
+	// check if it matches the subscribed ones
 	for _, sub := range client.subscriptions {
 		if sub.Matches(topic) {
 			return sub
@@ -57,14 +69,25 @@ func (client *ConnectedClient) SubscribeToPattern(pattern string, group string) 
 	}
 
 	client.subscriptions = append(client.subscriptions, subscription)
+
+	// If this exact pattern has been previously unsubscribed from, remove that entry
+	for i, unsub := range client.unsubscriptions {
+		if unsub.pattern == pattern {
+			client.unsubscriptions = append(client.unsubscriptions[:i], client.unsubscriptions[i+1:]...)
+		}
+	}
 }
 
-func (client *ConnectedClient) UnsubscribeFromTopic(topic string) {
+func (client *ConnectedClient) UnsubscribeFromPattern(pattern string) {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	for i, subscription := range client.subscriptions {
-		if subscription.Matches(topic) {
+	unsubscription := &Subscription{active: true, pattern: pattern}
+	client.unsubscriptions = append(client.unsubscriptions, unsubscription)
+
+	// If this exact pattern has been previously subscribed to, remove that entry
+	for i, sub := range client.subscriptions {
+		if sub.pattern == pattern {
 			client.subscriptions = append(client.subscriptions[:i], client.subscriptions[i+1:]...)
 		}
 	}

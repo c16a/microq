@@ -5,5 +5,5 @@ const UnSubAck = "unsuback"
 type UnsubAckEvent struct {
 	Kind    string `json:"kind"`
 	Success bool   `json:"success"`
-	Topic   string `json:"topic"`
+	Pattern string `json:"pattern"`
 }

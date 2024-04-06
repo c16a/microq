@@ -3,6 +3,6 @@ package events
 const Unsub = "unsub"
 
 type UnsubEvent struct {
-	Kind  string `json:"kind"`
-	Topic string `json:"topic"`
+	Kind    string `json:"kind"`
+	Pattern string `json:"pattern"`
 }

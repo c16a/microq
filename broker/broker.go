@@ -45,7 +45,7 @@ func (broker *Broker) Broadcast(event events.PubEvent) error {
 
 	var groupedClients = make(map[string][]*ConnectedClient, 0)
 	for _, client := range broker.clients {
-		subscription := client.GetSubscription(event.Topic)
+		subscription := client.GetEligibility(event.Topic)
 		if subscription != nil {
 			if subscription.group == "" {
 				client.WriteDataMessage(data)

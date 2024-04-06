@@ -12,11 +12,11 @@ func handleUnsubscribe(message []byte, client *broker.ConnectedClient) error {
 	if err != nil {
 		return err
 	}
-	client.UnsubscribeFromTopic(event.Topic)
+	client.UnsubscribeFromPattern(event.Pattern)
 	unsubackEvent := &events.UnsubAckEvent{
 		Kind:    events.UnSubAck,
 		Success: true,
-		Topic:   event.Topic,
+		Pattern: event.Pattern,
 	}
 	return client.WriteInterface(unsubackEvent)
 }
