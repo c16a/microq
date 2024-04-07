@@ -38,6 +38,9 @@ func (broker *Broker) Disconnect(clientId string) {
 }
 
 func (broker *Broker) Broadcast(event events.PubEvent) error {
+	broker.mutex.RLock()
+	defer broker.mutex.RUnlock()
+
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err
