@@ -29,6 +29,7 @@ func echo(upgrader websocket.Upgrader, b *broker.Broker, sp storage.Provider) fu
 		defer c.Close()
 
 		clientId := request.Header.Get("Client-Id")
+
 		client := broker.NewConnectedClient(c, clientId)
 		b.Connect(clientId, client)
 

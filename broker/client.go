@@ -25,6 +25,9 @@ func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
 }
 
 func (client *ConnectedClient) WriteDataMessage(data []byte) error {
+	client.mutex.Lock()
+	defer client.mutex.Unlock()
+	
 	return client.conn.WriteMessage(websocket.TextMessage, data)
 }
 
