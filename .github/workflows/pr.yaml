@@ -5,9 +5,52 @@ on:
     branches: [ "main" ]
 
 jobs:
+  codeql:
+    name: Analyze Go
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+          build-mode: autobuild
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
+
+  devskim:
+    name: DevSkim
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run DevSkim scanner
+        uses: microsoft/DevSkim-Action@v1
+
+      - name: Upload DevSkim scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: devskim-results.sarif
+
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs:
+      - devskim
+      - codeql
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -119,30 +162,3 @@ jobs:
 
       - name: Build
         run: go build -ldflags="-s -w" -o microq main.go
-
-  analyze:
-    name: Analyze Go
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    permissions:
-      security-events: write
-    needs:
-      - build-linux-amd64
-      - build-linux-arm64
-      - build-darwin-arm64
-      - build-windows-amd64
-      - build-windows-arm64
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: go
-          build-mode: autobuild
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:go"
