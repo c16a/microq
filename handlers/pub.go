@@ -4,29 +4,40 @@ import (
 	"encoding/json"
 	"github.com/c16a/microq/broker"
 	"github.com/c16a/microq/events"
+	"github.com/c16a/microq/storage"
 	"github.com/google/uuid"
 )
 
-func handlePublish(message []byte, client *broker.ConnectedClient, broker *broker.Broker) error {
+func handlePublish(message []byte, client *broker.ConnectedClient, broker *broker.Broker, sp storage.Provider) error {
 	var event events.PubEvent
 	err := json.Unmarshal(message, &event)
 	if err != nil {
 		return err
 	}
-	if event.QoS == 1 {
-		pubAckEvent := &events.PubAckEvent{
-			Kind:     events.PubAck,
-			PacketId: uuid.NewString(),
+	event.PacketId = uuid.New().String()
+
+	if event.Retain {
+		if err := sp.SaveMessage(&event); err != nil {
+			return err
 		}
-		client.WriteInterface(pubAckEvent)
-	}
-	if event.QoS == 2 {
-		pubRecEvent := &events.PubRecEvent{
-			Kind:     events.PubRec,
-			PacketId: uuid.NewString(),
-		}
-		client.WriteInterface(pubRecEvent)
 	}
 	go broker.Broadcast(event)
+
+	switch event.QoS {
+	case 1:
+		pubAckEvent := &events.PubAckEvent{
+			Kind:     events.PubAck,
+			PacketId: event.PacketId,
+		}
+		client.WriteInterface(pubAckEvent)
+		break
+	case 2:
+		pubRecEvent := &events.PubRecEvent{
+			Kind:     events.PubRec,
+			PacketId: event.PacketId,
+		}
+		client.WriteInterface(pubRecEvent)
+		break
+	}
 	return nil
 }
