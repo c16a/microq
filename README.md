@@ -1,7 +1,9 @@
 # microq
-A tiny Websocket-based event broker.
+A tiny event broker.
 
 ## Features
+- [x] Websocket support
+- [x] TCP support
 - [x] Grouped subscriptions
 - [ ] Offline messages
 - [ ] Clustering

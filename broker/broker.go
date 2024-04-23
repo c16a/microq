@@ -7,9 +7,8 @@ import (
 	"sync"
 )
 
-type WebSocketConnection interface {
-	WriteMessage(messageType int, data []byte) error
-	ReadMessage() (messageType int, p []byte, err error)
+type GenericConnection interface {
+	WriteMessage(data []byte) error
 }
 
 type Broker struct {
