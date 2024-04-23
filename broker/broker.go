@@ -29,11 +29,15 @@ func (broker *Broker) Connect(clientId string, client *ConnectedClient) {
 	broker.clients[clientId] = client
 }
 
-func (broker *Broker) Disconnect(clientId string) {
+func (broker *Broker) Disconnect(client *ConnectedClient) {
 	broker.mutex.Lock()
 	defer broker.mutex.Unlock()
 
-	delete(broker.clients, clientId)
+	for _, c := range broker.clients {
+		if client.GetId() == c.GetId() {
+			delete(broker.clients, client.GetId())
+		}
+	}
 }
 
 func (broker *Broker) Broadcast(event events.PubEvent) error {

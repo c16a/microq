@@ -7,12 +7,8 @@ import (
 type TestingWebSocketConnection struct {
 }
 
-func (t *TestingWebSocketConnection) WriteMessage(messageType int, data []byte) error {
+func (t *TestingWebSocketConnection) WriteMessage(data []byte) error {
 	return nil
-}
-
-func (t *TestingWebSocketConnection) ReadMessage() (messageType int, p []byte, err error) {
-	return 0, nil, nil
 }
 
 func TestConnectedClient_Subscribe_Unsubscribe(t *testing.T) {

@@ -40,7 +40,7 @@ func runTcpInterface(b *broker.Broker, storageProvider storage.Provider) error {
 			line := scanner.Text()
 
 			tcpConn := conn.NewTCPConnection(c)
-			client := broker.NewConnectedClient(tcpConn, "unlabeled")
+			client := broker.NewUnidentifiedClient(tcpConn)
 
 			err = handlers.HandleMessage(client, b, storageProvider, []byte(line))
 			if err != nil {
@@ -65,17 +65,14 @@ func echo(upgrader websocket.Upgrader, b *broker.Broker, sp storage.Provider) fu
 		}
 		defer c.Close()
 
-		clientId := request.Header.Get("Client-Id")
-
 		wsConn := conn.NewWebsocketConnection(c)
-		client := broker.NewConnectedClient(wsConn, clientId)
-		b.Connect(clientId, client)
+		client := broker.NewUnidentifiedClient(wsConn)
 
 		for {
 			_, message, err := c.ReadMessage()
 			if err != nil {
 				if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
-					b.Disconnect(clientId)
+					b.Disconnect(client)
 					break
 				} else {
 					continue

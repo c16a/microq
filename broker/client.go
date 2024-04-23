@@ -23,8 +23,20 @@ func NewConnectedClient(conn GenericConnection, id string) *ConnectedClient {
 	}
 }
 
+func NewUnidentifiedClient(conn GenericConnection) *ConnectedClient {
+	return NewConnectedClient(conn, "")
+}
+
+func (client *ConnectedClient) IsIdentified() bool {
+	return client.id != ""
+}
+
 func (client *ConnectedClient) SetId(id string) {
 	client.id = id
+}
+
+func (client *ConnectedClient) GetId() string {
+	return client.id
 }
 
 func (client *ConnectedClient) WriteDataMessage(data []byte) error {
