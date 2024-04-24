@@ -2,7 +2,6 @@ package broker
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"sync"
 )
 
@@ -10,11 +9,11 @@ type ConnectedClient struct {
 	id              string
 	subscriptions   []*Subscription
 	unsubscriptions []*Subscription
-	conn            WebSocketConnection
+	conn            GenericConnection
 	mutex           sync.RWMutex
 }
 
-func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
+func NewConnectedClient(conn GenericConnection, id string) *ConnectedClient {
 	return &ConnectedClient{
 		id:              id,
 		conn:            conn,
@@ -24,11 +23,27 @@ func NewConnectedClient(conn WebSocketConnection, id string) *ConnectedClient {
 	}
 }
 
+func NewUnidentifiedClient(conn GenericConnection) *ConnectedClient {
+	return NewConnectedClient(conn, "")
+}
+
+func (client *ConnectedClient) IsIdentified() bool {
+	return client.id != ""
+}
+
+func (client *ConnectedClient) SetId(id string) {
+	client.id = id
+}
+
+func (client *ConnectedClient) GetId() string {
+	return client.id
+}
+
 func (client *ConnectedClient) WriteDataMessage(data []byte) error {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	return client.conn.WriteMessage(websocket.TextMessage, data)
+	return client.conn.WriteMessage(data)
 }
 
 func (client *ConnectedClient) WriteInterface(v any) error {

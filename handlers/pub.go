@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/c16a/microq/broker"
 	"github.com/c16a/microq/events"
 	"github.com/c16a/microq/storage"
@@ -9,6 +10,15 @@ import (
 )
 
 func handlePublish(message []byte, client *broker.ConnectedClient, broker *broker.Broker, sp storage.Provider) error {
+
+	if !client.IsIdentified() {
+		client.WriteInterface(&events.PubAckEvent{
+			Kind:    events.PubAck,
+			Success: false,
+		})
+		return errors.New("unidentified client")
+	}
+
 	var event events.PubEvent
 	err := json.Unmarshal(message, &event)
 	if err != nil {

@@ -17,6 +17,8 @@ func HandleMessage(client *broker.ConnectedClient, broker *broker.Broker, sp sto
 		return handleSubscribe(message, client)
 	case events.Unsub:
 		return handleUnsubscribe(message, client)
+	case events.Conn:
+		return handleConn(message, client, broker)
 	}
 	return nil
 }

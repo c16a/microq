@@ -7,9 +7,8 @@ import (
 	"sync"
 )
 
-type WebSocketConnection interface {
-	WriteMessage(messageType int, data []byte) error
-	ReadMessage() (messageType int, p []byte, err error)
+type GenericConnection interface {
+	WriteMessage(data []byte) error
 }
 
 type Broker struct {
@@ -30,11 +29,15 @@ func (broker *Broker) Connect(clientId string, client *ConnectedClient) {
 	broker.clients[clientId] = client
 }
 
-func (broker *Broker) Disconnect(clientId string) {
+func (broker *Broker) Disconnect(client *ConnectedClient) {
 	broker.mutex.Lock()
 	defer broker.mutex.Unlock()
 
-	delete(broker.clients, clientId)
+	for _, c := range broker.clients {
+		if client.GetId() == c.GetId() {
+			delete(broker.clients, client.GetId())
+		}
+	}
 }
 
 func (broker *Broker) Broadcast(event events.PubEvent) error {
