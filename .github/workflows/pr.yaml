@@ -193,7 +193,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: false
           tags: |
-            ghcr.io/c16a/microq:latest
+            ghcr.io/c16a/microq:rolling
 
   docs:
     name: Build docs site
