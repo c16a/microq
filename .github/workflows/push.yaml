@@ -198,6 +198,7 @@ jobs:
             ghcr.io/c16a/microq:latest
 
   docs:
+    name: Update docs site
     runs-on: ubuntu-latest
     permissions:
       contents: write

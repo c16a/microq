@@ -194,3 +194,18 @@ jobs:
           push: false
           tags: |
             ghcr.io/c16a/microq:latest
+
+  docs:
+    name: Build docs site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - image
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - run: pip install mkdocs-material
+      - run: mkdocs build
