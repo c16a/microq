@@ -195,9 +195,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/c16a/microq:latest
+            ghcr.io/c16a/microq:rolling
 
   docs:
+    name: Update docs site
     runs-on: ubuntu-latest
     permissions:
       contents: write
