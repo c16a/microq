@@ -43,8 +43,7 @@ func (f *FileProvider) SaveMessage(event *events.PubEvent) error {
 }
 
 func (f *FileProvider) Close() error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func NewFileStorageProvider(rootDir string) *FileProvider {
