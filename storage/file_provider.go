@@ -3,6 +3,7 @@ package storage
 import (
 	"encoding/json"
 	"errors"
+	"github.com/c16a/microq/config"
 	"github.com/c16a/microq/events"
 	"io/fs"
 	"os"
@@ -46,6 +47,6 @@ func (f *FileProvider) Close() error {
 	return nil
 }
 
-func NewFileStorageProvider(rootDir string) *FileProvider {
-	return &FileProvider{}
+func NewFileStorageProvider(c *config.Config) *FileProvider {
+	return &FileProvider{rootDir: c.Storage.RootDir}
 }
