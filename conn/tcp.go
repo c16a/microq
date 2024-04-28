@@ -11,6 +11,7 @@ func NewTCPConnection(conn *net.TCPConn) *TCPConnection {
 }
 
 func (tc *TCPConnection) WriteMessage(data []byte) error {
+	data = append(data, '\n')
 	_, err := tc.conn.Write(data)
 	return err
 }
