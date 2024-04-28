@@ -15,10 +15,10 @@ func handleConn(message []byte, client *broker.ConnectedClient, b *broker.Broker
 
 	client.SetId(event.ClientId)
 	b.Connect(event.ClientId, client)
-	subackEvent := &events.ConnAckEvent{
+	connackEvent := &events.ConnAckEvent{
 		Kind:     events.ConnAck,
 		Success:  true,
 		ClientId: event.ClientId,
 	}
-	return client.WriteInterface(subackEvent)
+	return client.WriteInterface(connackEvent)
 }
