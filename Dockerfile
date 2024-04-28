@@ -11,6 +11,10 @@ RUN go build -ldflags="-s -w" -o microq github.com/c16a/microq
 
 FROM scratch
 
+LABEL org.opencontainers.image.source=https://github.com/c16a/microq
+LABEL org.opencontainers.image.description="A tiny event broker"
+LABEL org.opencontainers.image.licenses=MIT
+
 WORKDIR /app
 COPY --from=builder /app/microq ./
 CMD ["/app/microq"]

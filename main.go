@@ -10,7 +10,7 @@ import (
 func main() {
 	b := broker.NewBroker()
 
-	var storageProvider = storage.NewBadgerProvider()
+	var storageProvider = storage.NewFileStorageProvider("/tmp/microq")
 	defer storageProvider.Close()
 
 	go interfaces.RunWs(b, storageProvider)
