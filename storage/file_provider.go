@@ -15,32 +15,30 @@ type FileProvider struct {
 
 func (f *FileProvider) SaveMessage(event *events.PubEvent) error {
 	fSys := os.DirFS(f.rootDir)
-	fInfo, err := fs.Stat(fSys, event.Topic)
+	fInfo, err := fs.Stat(fSys, "msg.txt")
+
+	var offlineFile *os.File
 	if err != nil {
+		// Couldn't stat the file
 		if errors.Is(err, fs.ErrNotExist) {
-			if dirCreateErr := os.Mkdir(f.rootDir+"/"+event.Topic, 0644); dirCreateErr != nil {
-				return dirCreateErr
+			// If file doesn't exist, create it.
+			if offlineFile, err = os.Create(f.rootDir + "/msg.txt"); err != nil {
+				return err
 			}
 		} else {
+			// Any other error, throw
 			return err
 		}
 	}
-	if !fInfo.IsDir() {
-		return errors.New("not a directory")
-	} else {
-		fullPath := f.rootDir + "/" + event.Topic
-		f, err := os.Create(fullPath)
-		if err != nil {
-			return err
-		}
-
-		eventBytes, err := json.Marshal(event)
-		if err != nil {
-			return err
-		}
-		_, err = f.Write(eventBytes)
+	if fInfo.IsDir() {
+		return errors.New("found a directory instead of a file")
+	}
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
 		return err
 	}
+	_, err = offlineFile.Write(eventBytes)
+	return err
 }
 
 func (f *FileProvider) Close() error {
