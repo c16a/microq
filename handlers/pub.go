@@ -7,6 +7,7 @@ import (
 	"github.com/c16a/microq/events"
 	"github.com/c16a/microq/storage"
 	"github.com/google/uuid"
+	"strings"
 )
 
 func handlePublish(message []byte, client *broker.ConnectedClient, broker *broker.Broker, sp storage.Provider) error {
@@ -24,6 +25,16 @@ func handlePublish(message []byte, client *broker.ConnectedClient, broker *broke
 	if err != nil {
 		return err
 	}
+
+	topic := event.Topic
+	if strings.Contains(topic, "/") || strings.Contains(topic, "\\") || strings.Contains(topic, "..") {
+		client.WriteInterface(&events.PubAckEvent{
+			Kind:    events.PubAck,
+			Success: false,
+		})
+		return errors.New("topic not allowed")
+	}
+
 	event.PacketId = uuid.New().String()
 
 	if event.Retain {

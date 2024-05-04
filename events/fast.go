@@ -1,8 +1,19 @@
 package events
 
-import "github.com/valyala/fastjson"
+import (
+	"encoding/json"
+)
+
+type kindOnly struct {
+	Kind string `json:"kind"`
+}
 
 // This doesn't parse the entire JSON, so it's (probably) fast
 func GetKindFromJson(data []byte) string {
-	return fastjson.GetString(data, "kind")
+	var k kindOnly
+	err := json.Unmarshal(data, &k)
+	if err != nil {
+		return ""
+	}
+	return k.Kind
 }
