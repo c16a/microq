@@ -67,6 +67,7 @@ jobs:
     env:
       GOOS: linux
       GOARCH: amd64
+      CGO_ENABLED: 0
     name: Build (linux/amd64)
     needs:
       - test
@@ -81,12 +82,13 @@ jobs:
           go-version: '1.22.2'
 
       - name: Build
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o microq main.go
+        run: go build -o microq main.go
 
   build-linux-arm64:
     env:
       GOOS: linux
       GOARCH: arm64
+      CGO_ENABLED: 0
     name: Build (linux/arm64)
     needs:
       - test
@@ -101,12 +103,55 @@ jobs:
           go-version: '1.22.2'
 
       - name: Build
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o microq main.go
+        run: go build -o microq main.go
+
+  build-linux-riscv64:
+    env:
+      GOOS: linux
+      GOARCH: riscv64
+      CGO_ENABLED: 0
+    name: Build (linux/riscv64)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.2'
+
+      - name: Build
+        run: go build -o microq main.go
+
+  build-linux-ppc64le:
+    env:
+      GOOS: linux
+      GOARCH: ppc64le
+      CGO_ENABLED: 0
+    name: Build (linux/ppc64le)
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.2'
+
+      - name: Build
+        run: go build -o microq main.go
 
   build-darwin-arm64:
     env:
       GOOS: darwin
       GOARCH: arm64
+      CGO_ENABLED: 0
     name: Build (darwin/arm64)
     needs:
       - test
@@ -121,12 +166,13 @@ jobs:
           go-version: '1.22.2'
 
       - name: Build
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o microq main.go
+        run: go build -o microq main.go
 
   build-windows-amd64:
     env:
       GOOS: windows
       GOARCH: amd64
+      CGO_ENABLED: 0
     name: Build (windows/amd64)
     needs:
       - test
@@ -141,12 +187,13 @@ jobs:
           go-version: '1.22.2'
 
       - name: Build
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o microq main.go
+        run: go build -o microq main.go
 
   build-windows-arm64:
     env:
       GOOS: windows
       GOARCH: arm64
+      CGO_ENABLED: 0
     name: Build (windows/arm64)
     needs:
       - test
@@ -161,7 +208,7 @@ jobs:
           go-version: '1.22.2'
 
       - name: Build
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o microq main.go
+        run: go build -o microq main.go
 
   image:
     name: Build Image
@@ -206,6 +253,13 @@ jobs:
       contents: write
     needs:
       - image
+      - build-linux-amd64
+      - build-linux-arm64
+      - build-linux-riscv64
+      - build-linux-ppc64le
+      - build-darwin-arm64
+      - build-windows-amd64
+      - build-windows-arm64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
