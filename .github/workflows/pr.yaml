@@ -6,7 +6,7 @@ on:
 
 jobs:
   codeql:
-    name: Analyze Go
+    name: Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 360
     permissions:
@@ -27,7 +27,7 @@ jobs:
           category: "/language:go"
 
   devskim:
-    name: DevSkim
+    name: Lint
     runs-on: ubuntu-latest
     permissions:
       actions: read
