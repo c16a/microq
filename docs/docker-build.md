@@ -66,7 +66,6 @@ services:
       - microq_volume:/tmp/microq
     ports:
       - 8080:8080
-      - 5000:5000
 volumes:
   microq_volume:
     external: true
